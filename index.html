@@ -35,14 +35,15 @@ button{cursor:pointer}button:hover{border-color:var(--ac)}
 #lock .b{max-width:520px;margin:auto;border:2px solid #ff3b4e;border-radius:14px;padding:18px;box-shadow:0 0 40px #ff3b4e88}
 #lock h1{color:#ff5a6a}#lock label{display:block;padding:8px;border:1px solid #7a2a33;border-radius:8px;margin:6px 0;cursor:pointer}
 #lock button{background:#ff3b4e;color:#fff;border:0;padding:10px 16px;margin-top:10px;max-width:none}#lock button:disabled{opacity:.35}
+.cal td.ex{background:#ff3b4e33;border:1px solid #ff5a6a;color:#ff9aa4}.ml{border-left:4px solid var(--line)}#gear{position:fixed;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));opacity:.18;border:0;background:none;font-size:16px;padding:4px;z-index:9}#gear:hover{opacity:.8}.tabs button{font-size:11px}
 </style></head><body><div class="w">
 <div class="card top"><div class="rank" id="rk"></div><div class="grow"><h1>HUNTER’S STUDY SYSTEM</h1><div class="o" id="lv" style="margin:4px 0"></div><div class="bar"><i id="xb"></i></div><div class="sm" id="xt"></div></div>
-<div class="r"><div class="sm">⏳ PENALTY CLOCK · 24h per day</div><div class="o big" id="ck"></div><div class="sm"><b id="cd"></b> days to Finals · Nov 17</div><button data-a="rs" id="rs" style="margin-top:6px">Reset progress</button></div></div>
-<div class="tabs"><button data-a="tab" data-v="d" id="bd">⚔ DAILY QUESTS</button><button data-a="tab" data-v="w" id="bw">🌍 WORLD LIST</button></div>
-<div id="vd" class="grid"><div><div class="card"><h2>📅 DUNGEON CALENDAR · Oct 19 – Nov 17</h2><div id="cal"></div><div class="sm">Tap a day. Green = cleared. Gold border = selected.</div></div><div class="card"><h2>⚔ SUBJECT MASTERY</h2><div id="sb"></div></div></div>
+<div class="r"><div class="sm">⏳ PENALTY CLOCK · 24h per day</div><div class="o big" id="ck"></div><div class="sm"><b id="cd"></b> days to Finals · Nov 14–15</div><button data-a="rs" id="rs" style="margin-top:6px">Reset progress</button></div></div>
+<div class="tabs"><button data-a="tab" data-v="d" id="bd">⚔ DAILY QUESTS</button><button data-a="tab" data-v="w" id="bw">🌍 WORLD LIST</button><button data-a="tab" data-v="m" id="bm">🔮 MASTERY CODEX</button></div>
+<div id="vd" class="grid"><div><div class="card"><h2>📅 DUNGEON CALENDAR · Oct 19 – Nov 15</h2><div id="cal"></div><div class="sm">Tap a day. Green = cleared. Gold border = selected. Red = exam days (Nov 14–15).</div></div><div class="card"><h2>⚔ SUBJECT MASTERY</h2><div id="sb"></div></div></div>
 <div class="card"><h2 id="dh"></h2><div id="od"></div><div id="dq"></div></div></div>
-<div id="vw" class="card" style="display:none"></div></div>
-<div id="lock"></div><div id="tip"></div><div id="toast"></div>
+<div id="vw" class="card" style="display:none"></div><div id="vm" class="card" style="display:none"></div></div>
+<div id="lock"></div><div id="tip"></div><div id="toast"></div><button id="gear" data-a="pv" title="Settings: preview the penalty screen">⚙</button>
 <script>
 const SUBJ={ES:['Earth Science','#7be0ff'],PH:['Physics','#ffd25a'],LS:['Logical Study','#c59bff'],BI:['Biology','#38e0a0'],CH:['Chemistry','#ff7a7a']};
 const D={
@@ -67,13 +68,13 @@ CH:[["Matter & Atomic Structure","Physical & chemical properties::How to tell ph
 ["Stoichiometry & Chemical Reactions — VERY IMPORTANT","!Balancing chemical equations::Same atoms of each element on both sides.|!Types of chemical reactions::Synthesis, decomposition, single and double replacement, combustion.|!Mole concept & molar mass::Grams ↔ moles using molar mass.|!Avogadro’s number::6.022×10²³ particles per mole.|!Empirical & molecular formulas::Simplest ratio vs. actual formula from percent composition.|!Limiting reagents::The reactant that runs out first caps the product.|!Theoretical & percent yield::Percent yield = actual ÷ theoretical × 100."],
 ["Solutions, Acids & Bases","Molarity, molality, mass percent & dilution::Concentration units and M₁V₁ = M₂V₂.|Factors affecting solubility::Temperature, pressure, and “like dissolves like”.|Henry’s Law::Gas solubility rises with its partial pressure.|Arrhenius, Brønsted-Lowry & Lewis acids/bases::Three acid-base definitions compared.|pH and pOH::pH = −log[H⁺]; pH + pOH = 14.|Strong vs. weak acids/bases::Full vs. partial ionization.|Neutralization reactions::Acid + base gives salt + water."],
 ["Gas Laws, Thermochemistry & Thermodynamics","Boyle’s Law::Pressure and volume are inversely related (constant T).|Charles’s Law::Volume is proportional to temperature in kelvin (constant P).|Gay-Lussac’s Law::Pressure is proportional to temperature in kelvin (constant V).|Combined Gas Law::Combines Boyle, Charles and Gay-Lussac.|Ideal Gas Law::PV = nRT.|Endothermic vs. exothermic processes::Absorbing vs. releasing heat.|Enthalpy changes::ΔH of reactions and Hess’s law idea.|Specific heat capacity::q = mcΔT.|Basic laws of thermodynamics::Energy conservation and entropy increase."]]};
-const START=Date.UTC(2026,9,19),DAYS=30,L=864e5,T=[],M={};
+const START=Date.UTC(2026,9,19),DAYS=26,L=864e5,T=[],M={};
 for(const s in D){const a=[];D[s].forEach(([h,l])=>l.split('|').forEach(x=>{const[n,i]=x.split('::'),m=n[0]=='!';a.push({s,h,n:m?'⭐ '+n.slice(1):n,i,xp:m?30:20})}));a.forEach((t,k)=>{t.id=s+k;t.p=(k+.5)/a.length;T.push(t)})}
-const nT=T.length;[...T].sort((a,b)=>a.p-b.p).forEach((t,k)=>t.d=Math.floor(k*27/nT));
-[['ES','Earth Science',27],['PH','Physics',27],['BI','Biology',28],['CH','Chemistry (stoichiometry!)',28],['LS','Logical Study',29]].forEach((r,i)=>T.push({id:'RV'+i,s:r[0],h:'Review & Boss',n:'🛡 Review: '+r[1],i:'Re-read notes, redo weak topics and quiz yourself.',xp:40,d:r[2]}));
-T.push({id:'BOSS',s:'LS',h:'Review & Boss',n:'👑 BOSS FIGHT: Full mock exam',i:'Timed mock exam covering all 5 subjects.',xp:100,d:29});
+const nT=T.length;[...T].sort((a,b)=>a.p-b.p).forEach((t,k)=>t.d=Math.floor(k*23/nT));
+[['ES','Earth Science',23],['PH','Physics',23],['BI','Biology',24],['CH','Chemistry (stoichiometry!)',24],['LS','Logical Study',25]].forEach((r,i)=>T.push({id:'RV'+i,s:r[0],h:'Review & Boss',n:'🛡 Review: '+r[1],i:'Re-read notes, redo weak topics and quiz yourself.',xp:40,d:r[2]}));
+T.push({id:'BOSS',s:'LS',h:'Review & Boss',n:'👑 BOSS FIGHT: Full mock exam',i:'Timed mock exam covering all 5 subjects.',xp:100,d:25});
 T.forEach(t=>M[t.id]=t);
-let st={done:{},pl:{},pd:{},pn:0,q:3};
+let st={done:{},pl:{},pd:{},pn:0,q:3,ml:{}};
 try{const x=localStorage.getItem('hunterStudy2');if(x)Object.assign(st,JSON.parse(x))}catch(e){}
 const save=()=>{try{localStorage.setItem('hunterStudy2',JSON.stringify(st))}catch(e){}};
 const $=i=>document.getElementById(i),day=t=>st.pl[t.id]??t.d;
@@ -81,29 +82,29 @@ const td=()=>{const n=new Date();return Math.round((Date.UTC(n.getFullYear(),n.g
 const fmt=i=>i<0?'backlog':new Date(START+i*L).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});
 const xpOf=()=>Math.max(0,T.reduce((a,t)=>a+(st.done[t.id]?t.xp:0),0)-25*st.pn),lvl=x=>Math.floor(Math.sqrt(x/20))+1;
 const RK='EDCBAS',TT=['Newbie Hunter','Awakened','Elite Hunter','Commander','Knight Captain','Shadow Monarch'];
-let view='d',flt='',sel=Math.min(Math.max(td(),0),DAYS-1),prev=lvl(xpOf()),lastTd=td(),rc=0;
+Object.keys(st.pl).forEach(k=>{if(st.pl[k]>=DAYS)st.pl[k]=DAYS-1});let view='d',flt='',mf='g',sel=Math.min(Math.max(td(),0),DAYS-1),prev=lvl(xpOf()),lastTd=td(),rc=0;
 const toast=m=>{const e=$('toast');e.innerHTML=m;e.className='s';setTimeout(()=>e.className='',2300)};
 const pend=()=>{const r=[];for(let d=0;d<Math.min(td(),DAYS);d++)if(!st.pd[d]&&T.some(t=>day(t)==d&&!st.done[t.id]))r.push(d);return r};
 const op=ph=>{let h='<option value="">'+ph+'</option>';for(const s in SUBJ){const a=T.filter(t=>t.s==s&&!st.done[t.id]&&day(t)!=sel);if(a.length)h+='<optgroup label="'+SUBJ[s][0]+'">'+a.map(t=>'<option value="'+t.id+'">'+t.n+' ('+fmt(day(t))+')</option>').join('')+'</optgroup>'}return h};
 const row=(t,w)=>'<div class="q'+(st.done[t.id]?' done':'')+'"><input type="checkbox" data-t="'+t.id+'"'+(st.done[t.id]?' checked':'')+'><span class="tag" style="background:'+SUBJ[t.s][1]+'">'+t.s+'</span><span class="n" data-i="'+t.id+'">'+t.n+'</span><span class="xp">+'+t.xp+'</span>'+(w?'<span class="sm">'+fmt(day(t))+'</span><button data-a="pin" data-v="'+t.id+'" title="Schedule on the selected day">📌</button>':(st.done[t.id]?'':'<select data-sw="'+t.id+'" title="Swap with another topic">'+op('⇄ swap')+'</select>')+'<button data-a="rm" data-v="'+t.id+'" title="Send back to World List backlog">✕</button>')+'</div>';
-const CH=['💪 50 push-ups (strict form, rest as needed)','🦵 100 squats','🧱 3 × 60-second plank','🔥 40 burpees','🪑 3 × 60-second wall sit','🧠 Write a 1-page explanation of your hardest skipped topic from memory','📝 Solve 20 practice problems from your weakest subject, no notes','🎤 Teach 3 skipped topics out loud for 10 minutes, no notes'];
+const CH=['💪 50 push-ups (strict form, rest as needed)','🦵 100 squats','🧱 3 × 60-second plank','🔥 40 burpees','🪑 3 × 60-second wall sit','🧠 Write a 1-page explanation of your hardest skipped topic from memory','📝 Solve 20 practice problems from your weakest subject, no notes','🎤 Teach 3 skipped topics out loud for 10 minutes, no notes','🏃 10 minutes of jogging or high knees without stopping','🦵 30 lunges per leg','🤸 100 jumping jacks + 30 sit-ups','📚 Study 90 minutes straight with your phone in another room','🗂 Write 15 flashcards for skipped topics, then recite every one','✍ Turn 3 skipped topics into a 1-page cheat sheet, then quiz yourself','🧩 Solve 15 logical/spatial reasoning items under a 15-minute timer'];
 function render(){
  const x=xpOf(),l=lvl(x),r=Math.min(5,Math.floor((l-1)/2)),lo=20*(l-1)**2,hi=20*l*l,ti=td();
  $('rk').textContent=RK[r];$('lv').textContent='LV. '+l+' · '+TT[r];$('xb').style.width=((x-lo)/(hi-lo)*100)+'%';$('xt').textContent=x+' XP · '+(hi-x)+' XP to Level '+(l+1);
- $('cd').textContent=Math.max(0,Math.round((Date.UTC(2026,10,17)-Date.UTC(2026,9,19))/L)-ti);
+ $('cd').textContent=Math.max(0,26-ti);
  if(l>prev)toast('⚡ LEVEL UP!<br>LV. '+l+' · Rank '+RK[r]);prev=l;
- $('bd').className=view=='d'?'on':'';$('bw').className=view=='w'?'on':'';$('vd').style.display=view=='d'?'':'none';$('vw').style.display=view=='w'?'':'none';
+ $('bd').className=view=='d'?'on':'';$('bw').className=view=='w'?'on':'';$('bm').className=view=='m'?'on':'';$('vd').style.display=view=='d'?'':'none';$('vw').style.display=view=='w'?'':'none';$('vm').style.display=view=='m'?'':'none';
  // lock
  const pn=pend(),lk=$('lock');
  if(pn.length){if(!lk.dataset.on){lk.dataset.on=1;lk.style.display='block';lk.innerHTML='<div class="b"><h1>⚠ SYSTEM LOCKED</h1><p>You failed to clear your quests on <b>'+pn.length+' day(s)</b>. The system took <b>−'+25*pn.length+' XP</b>. Choose ONE penalty quest and complete it for real to restore the system.</p>'+CH.map((c,i)=>'<label><input type="radio" name="pq" value="'+i+'"> '+c+'</label>').join('')+'<label><input type="checkbox" id="pk"> I completed it honestly.</label><button id="pb" disabled>RESTORE SYSTEM</button><p class="sm">Scale down if you are injured or unwell, and swap in the mental challenge instead.</p></div>'}}
- else{lk.style.display='none';delete lk.dataset.on}
+ else if(lk.dataset.on!='p'){lk.style.display='none';delete lk.dataset.on}
  // calendar
  let h='';
  [[2026,9],[2026,10]].forEach(([y,m])=>{h+='<div class="o sm" style="margin:8px 0 4px">'+['October','November'][m-9]+' '+y+'</div><table class="cal"><tr>'+'SMTWTFS'.split('').map(d=>'<th>'+d+'</th>').join('')+'</tr><tr>';
   const f=new Date(Date.UTC(y,m,1)).getUTCDay(),n=new Date(Date.UTC(y,m+1,0)).getUTCDate();for(let i=0;i<f;i++)h+='<td></td>';
-  for(let d=1;d<=n;d++){const i=(Date.UTC(y,m,d)-START)/L,inr=i>=0&&i<DAYS;if((f+d-1)%7==0&&d>1)h+='</tr><tr>';let c='',sb='';
+  for(let d=1;d<=n;d++){const i=(Date.UTC(y,m,d)-START)/L,inr=i>=0&&i<DAYS,ex=i==26||i==27;if((f+d-1)%7==0&&d>1)h+='</tr><tr>';let c='',sb='';
    if(inr){const ts=T.filter(t=>day(t)==i),dn=ts.filter(t=>st.done[t.id]).length;c='in'+(ts.length&&dn==ts.length?' full':'')+(i==sel?' sel':'')+(i==ti?' td':'');sb='<small>'+dn+'/'+ts.length+'</small>'}
-   h+='<td class="'+c+'"'+(inr?' data-a="day" data-v="'+i+'"':'')+'>'+d+sb+'</td>'}h+='</tr></table>'});
+   if(ex){c='ex';sb='<small>EXAM</small>'}h+='<td class="'+c+'"'+(inr?' data-a="day" data-v="'+i+'"':'')+'>'+d+sb+'</td>'}h+='</tr></table>'});
  $('cal').innerHTML=h;
  $('sb').innerHTML=Object.keys(SUBJ).map(k=>{const a=T.filter(t=>t.s==k),d=a.filter(t=>st.done[t.id]).length;return '<div class="sub"><b style="color:'+SUBJ[k][1]+'">'+SUBJ[k][0]+'</b><div class="bar"><i style="width:'+d/a.length*100+'%"></i></div><span class="sm">'+d+'/'+a.length+'</span></div>'}).join('');
  // daily
@@ -116,29 +117,38 @@ function render(){
  let w='<h2>🌍 WORLD LIST · '+tot+'/'+T.length+' cleared</h2><div class="chips"><button data-a="flt" data-v="" class="'+(flt?'':'on')+'">All</button>'+Object.keys(SUBJ).map(k=>'<button data-a="flt" data-v="'+k+'" class="'+(flt==k?'on':'')+'">'+SUBJ[k][0]+'</button>').join('')+'</div><div class="sm">📌 schedules a topic on the selected day: <b>'+fmt(sel)+'</b>. Check or uncheck anything, any time.</div>';
  for(const s in SUBJ){if(flt&&flt!=s)continue;const a=T.filter(t=>t.s==s);w+='<h2 style="margin-top:16px;color:'+SUBJ[s][1]+'">'+SUBJ[s][0].toUpperCase()+' · '+a.filter(t=>st.done[t.id]).length+'/'+a.length+'</h2>';
   [...new Set(a.map(t=>t.h))].forEach(hd=>{const b=a.filter(t=>t.h==hd);w+='<div class="hh"><b>'+hd+'</b><span class="sm">'+b.filter(t=>st.done[t.id]).length+'/'+b.length+'</span><span style="flex:1"></span><button data-a="hd" data-v="'+s+'|'+hd+'|1">✓ all</button><button data-a="hd" data-v="'+s+'|'+hd+'|0">clear</button></div>'+b.map(t=>row(t,1)).join('')})}
- $('vw').innerHTML=w;tick();
+ $('vw').innerHTML=w;$('vm').innerHTML=mast();tick();
 }
-function tick(){const el=$('ck'),i=td();if(i<0||i>=DAYS){el.textContent='—';return}
+const ML=[['Unseen','⬜','#8b97c7'],['Novice','🌱','#7be0ff'],['Apprentice','⚔','#ffd25a'],['Adept','🔷','#c59bff'],['Mastered','👑','#38e0a0']];
+function mast(){const P=T.filter(t=>t.h!='Review & Boss'),lv=t=>st.ml[t.id]||0,cnt=ML.map((_,k)=>P.filter(t=>lv(t)==k).length),pc=Math.round(P.reduce((a,t)=>a+lv(t),0)/(P.length*4)*100);
+ const mr=t=>'<div class="q ml" style="border-left-color:'+ML[lv(t)][2]+'"><span class="tag" style="background:'+SUBJ[t.s][1]+'">'+t.s+'</span><span class="n" data-i="'+t.id+'">'+t.n+'</span><select data-ml="'+t.id+'" style="color:'+ML[lv(t)][2]+'">'+ML.map((m,k)=>'<option value="'+k+'"'+(k==lv(t)?' selected':'')+'>'+m[1]+' '+m[0]+'</option>').join('')+'</select></div>';
+ let h='<h2>🔮 MASTERY CODEX · '+pc+'% mastered overall</h2><div class="bar"><i style="width:'+pc+'%"></i></div><div class="sm" style="margin:6px 0">Rate how well you know each topic. Finishing a quest turns an Unseen topic into Novice automatically. Tap a level below to group topics from every subject together.</div><div class="chips"><button data-a="mf" data-v="g" class="'+(mf=='g'?'on':'')+'">By subject</button>'+ML.map((m,k)=>'<button data-a="mf" data-v="'+k+'" class="'+(mf!='g'&&mf==k?'on':'')+'">'+m[1]+' '+m[0]+' ('+cnt[k]+')</button>').join('')+'</div>';
+ if(mf=='g'){for(const s in SUBJ){const a=P.filter(t=>t.s==s),p=Math.round(a.reduce((x,t)=>x+lv(t),0)/(a.length*4)*100);h+='<h2 style="margin-top:16px;color:'+SUBJ[s][1]+'">'+SUBJ[s][0].toUpperCase()+' · '+p+'% mastery</h2>';[...new Set(a.map(t=>t.h))].forEach(hd=>{h+='<div class="hh"><b>'+hd+'</b></div>'+a.filter(t=>t.h==hd).map(mr).join('')})}}
+ else{const a=P.filter(t=>lv(t)==+mf);h+='<h2 style="margin-top:14px;color:'+ML[mf][2]+'">'+ML[mf][1]+' '+ML[mf][0].toUpperCase()+' · '+a.length+' topics across all subjects</h2>'+(a.length?a.map(mr).join(''):'<div class="sm">Nothing here yet.</div>')}
+ return h}
+function preview(){const lk=$('lock');lk.dataset.on='p';lk.style.display='block';lk.innerHTML='<div class="b"><h1>⚠ SYSTEM LOCKED</h1><p class="sm" style="color:#ff9aa4">PREVIEW ONLY: this is what you will see if you fail to clear a day. Nothing is penalized.</p><p>You failed to clear your quests on <b>1 day(s)</b>. The system took <b>−25 XP</b>. Choose ONE penalty quest and complete it for real to restore the system.</p>'+CH.map(c=>'<label>'+c+'</label>').join('')+'<button id="pv">CLOSE PREVIEW</button></div>'}
+function tick(){const el=$('ck'),i=td();if(i==26||i==27){el.textContent='📝 EXAM DAY';el.style.color='var(--ok)';return}if(i<0||i>=DAYS){el.textContent='—';return}
  const ts=T.filter(t=>day(t)==i);if(ts.length&&ts.every(t=>st.done[t.id])){el.textContent='✅ DAY CLEARED';el.style.color='var(--ok)'}
  else{const n=new Date(),s=Math.floor((new Date(n.getFullYear(),n.getMonth(),n.getDate()+1)-n)/1e3),p=v=>String(v).padStart(2,'0');el.textContent=p(Math.floor(s/3600))+':'+p(Math.floor(s%3600/60))+':'+p(s%60);el.style.color=s<10800?'#ff5a5a':'var(--gold)'}
  if(i!=lastTd){lastTd=i;render()}}
 setInterval(tick,1000);
 document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
- if(d.t){t.checked?st.done[d.t]=1:delete st.done[d.t]}
+ if(d.t){if(t.checked){st.done[d.t]=1;if(!st.ml[d.t])st.ml[d.t]=1}else delete st.done[d.t]}
  else if(d.sw&&t.value){const a=M[d.sw],b=M[t.value],pb=day(b);st.pl[b.id]=sel;st.pl[a.id]=pb}
  else if(d.add&&t.value)st.pl[t.value]=sel;
  else if(d.q)st.q=+t.value;
+ else if(d.ml){+t.value?st.ml[d.ml]=+t.value:delete st.ml[d.ml]}
  else{const lk=$('lock');if(lk.contains(t))$('pb').disabled=!($('pk').checked&&lk.querySelector('input[name=pq]:checked'));return}
  save();render()});
 document.addEventListener('click',e=>{
- if(e.target.id=='pb'){const n=pend();st.pn+=n.length;n.forEach(d=>st.pd[d]=1);save();toast('System restored.<br>−'+25*n.length+' XP');render();return}
+ if(e.target.id=='pv'){const l=$('lock');l.style.display='none';delete l.dataset.on;render();return}if(e.target.id=='pb'){const n=pend();st.pn+=n.length;n.forEach(d=>st.pd[d]=1);save();toast('System restored.<br>−'+25*n.length+' XP');render();return}
  const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a,v=t.dataset.v;
- if(a=='tab')view=v;else if(a=='flt')flt=v;else if(a=='day')sel=+v;
+ if(a=='tab')view=v;else if(a=='flt')flt=v;else if(a=='mf')mf=v;else if(a=='pv'){preview();return}else if(a=='day')sel=+v;
  else if(a=='rm')st.pl[v]=-1;else if(a=='pin')st.pl[v]=sel;
  else if(a=='bk')T.forEach(x=>{if(day(x)>=0&&day(x)<td()&&!st.done[x.id])st.pl[x.id]=-1});
  else if(a=='hd'){const[s,h,o]=v.split('|');T.filter(x=>x.s==s&&x.h==h).forEach(x=>o=='1'?st.done[x.id]=1:delete st.done[x.id])}
  else if(a=='auto'){const k=T.filter(x=>day(x)==sel).length,c=T.filter(x=>!st.done[x.id]&&day(x)!=sel).sort((p,q)=>{const f=z=>day(z)<0?999:day(z)<sel?-1:day(z);return f(p)-f(q)});c.slice(0,Math.max(0,st.q-k)).forEach(x=>st.pl[x.id]=sel)}
- else if(a=='rs'){if(!rc){rc=1;t.textContent='Tap again to confirm';setTimeout(()=>{rc=0;t.textContent='Reset progress'},3000);return}st={done:{},pl:{},pd:{},pn:0,q:3};prev=1;rc=0;t.textContent='Reset progress'}
+ else if(a=='rs'){if(!rc){rc=1;t.textContent='Tap again to confirm';setTimeout(()=>{rc=0;t.textContent='Reset progress'},3000);return}st={done:{},pl:{},pd:{},pn:0,q:3,ml:{}};prev=1;rc=0;t.textContent='Reset progress'}
  save();render()});
 const tip=$('tip');
 function hv(e){const t=e.target.closest&&e.target.closest('[data-i]');if(!t){tip.style.display='none';return}const k=M[t.dataset.i];
