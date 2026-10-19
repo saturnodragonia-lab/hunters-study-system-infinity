@@ -1,0 +1,149 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Hunter’s Study System</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070a16;--card:#0f1530;--line:#26346b;--tx:#e6ecff;--mut:#8b97c7;--ac:#4aa8ff;--ac2:#9b5cff;--ok:#38e0a0;--gold:#ffd25a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root{--bg:#eef1fb;--card:#fff;--line:#c4cdee;--tx:#141a3a;--mut:#5a6595}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,Segoe UI,sans-serif}
+.w{max-width:1000px;margin:auto;padding:14px}
+h1,h2,.o{font-family:Orbitron,system-ui,sans-serif;letter-spacing:.06em}
+h1{font-size:19px;margin:0;color:var(--ac)}h2{font-size:13px;margin:0 0 10px;color:var(--ac2)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:0 0 18px #4aa8ff14}
+.top{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.r{text-align:right}.big{font-size:22px;color:var(--gold)}
+.rank{width:70px;height:70px;border-radius:14px;display:grid;place-items:center;font:800 36px Orbitron,sans-serif;color:#fff;background:linear-gradient(135deg,var(--ac),var(--ac2));box-shadow:0 0 22px var(--ac2)}
+.grow{flex:1;min-width:200px}.bar{height:12px;background:#0003;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .5s}
+.sm{font-size:12px;color:var(--mut)}.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tabs button{flex:1;padding:10px;font:700 12px Orbitron,sans-serif}.tabs .on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.cal{width:100%;border-collapse:separate;border-spacing:3px;text-align:center;table-layout:fixed}.cal th{font-size:11px;color:var(--mut)}
+.cal td{height:42px;border-radius:8px;font-size:12px;cursor:pointer;vertical-align:top;padding:3px;background:#0002;color:var(--mut)}
+.cal td.in{background:#4aa8ff1f;color:var(--tx);border:1px solid var(--line)}.cal td.full{background:#38e0a033;border-color:var(--ok)}
+.cal td.sel{outline:2px solid var(--gold)}.cal td.td{box-shadow:inset 0 0 0 2px var(--ac2)}.cal small{display:block;font-size:9px;color:var(--mut)}
+.q{display:flex;gap:8px;align-items:center;padding:7px 8px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;flex-wrap:wrap}
+.q.done{opacity:.55}.q.done .n{text-decoration:line-through}.q input[type=checkbox]{width:19px;height:19px;accent-color:var(--ok)}
+.n{flex:1;min-width:120px;cursor:help}.tag{font:700 10px Orbitron,sans-serif;padding:2px 6px;border-radius:6px;color:#000}.xp{font-size:11px;color:var(--gold)}
+select,button{background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit;font-size:12px;max-width:150px}
+button{cursor:pointer}button:hover{border-color:var(--ac)}
+.sub{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:13px}.sub b{width:96px}.sub .bar{flex:1}
+.hh{display:flex;gap:6px;align-items:center;margin:12px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.chips .on{border-color:var(--gold);color:var(--gold)}
+#tip{position:fixed;display:none;max-width:260px;background:#0b1030;color:#e6ecff;border:1px solid var(--ac);border-radius:10px;padding:10px;font-size:13px;z-index:20;pointer-events:none;box-shadow:0 0 20px #4aa8ff55}
+#toast{position:fixed;left:50%;top:70px;transform:translateX(-50%) scale(.8);background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;padding:16px 26px;border-radius:14px;font:800 18px Orbitron,sans-serif;opacity:0;pointer-events:none;transition:.4s;z-index:30;text-align:center}
+#toast.s{opacity:1;transform:translateX(-50%) scale(1)}
+#lock{display:none;position:fixed;inset:0;background:#1a0407f2;color:#ffe6e6;z-index:40;overflow:auto;padding:20px}
+#lock .b{max-width:520px;margin:auto;border:2px solid #ff3b4e;border-radius:14px;padding:18px;box-shadow:0 0 40px #ff3b4e88}
+#lock h1{color:#ff5a6a}#lock label{display:block;padding:8px;border:1px solid #7a2a33;border-radius:8px;margin:6px 0;cursor:pointer}
+#lock button{background:#ff3b4e;color:#fff;border:0;padding:10px 16px;margin-top:10px;max-width:none}#lock button:disabled{opacity:.35}
+</style></head><body><div class="w">
+<div class="card top"><div class="rank" id="rk"></div><div class="grow"><h1>HUNTER’S STUDY SYSTEM</h1><div class="o" id="lv" style="margin:4px 0"></div><div class="bar"><i id="xb"></i></div><div class="sm" id="xt"></div></div>
+<div class="r"><div class="sm">⏳ PENALTY CLOCK · 24h per day</div><div class="o big" id="ck"></div><div class="sm"><b id="cd"></b> days to Finals · Nov 17</div><button data-a="rs" id="rs" style="margin-top:6px">Reset progress</button></div></div>
+<div class="tabs"><button data-a="tab" data-v="d" id="bd">⚔ DAILY QUESTS</button><button data-a="tab" data-v="w" id="bw">🌍 WORLD LIST</button></div>
+<div id="vd" class="grid"><div><div class="card"><h2>📅 DUNGEON CALENDAR · Oct 19 – Nov 17</h2><div id="cal"></div><div class="sm">Tap a day. Green = cleared. Gold border = selected.</div></div><div class="card"><h2>⚔ SUBJECT MASTERY</h2><div id="sb"></div></div></div>
+<div class="card"><h2 id="dh"></h2><div id="od"></div><div id="dq"></div></div></div>
+<div id="vw" class="card" style="display:none"></div></div>
+<div id="lock"></div><div id="tip"></div><div id="toast"></div>
+<script>
+const SUBJ={ES:['Earth Science','#7be0ff'],PH:['Physics','#ffd25a'],LS:['Logical Study','#c59bff'],BI:['Biology','#38e0a0'],CH:['Chemistry','#ff7a7a']};
+const D={
+ES:[["Geology & Earth Systems","Earth’s layers::Crust, mantle, outer core and inner core: thickness, state and temperature.|Plate tectonics::Moving lithospheric plates; continental drift and seafloor spreading evidence.|Divergent, convergent & transform boundaries::Plates pull apart, collide or slide past each other; landforms of each.|Faults & folds::Rock deformation: normal, reverse and strike-slip faults; anticlines and synclines.|Rock cycle::How rocks change type through melting, cooling, compaction, heat and pressure.|Igneous, sedimentary & metamorphic rocks::How each rock type forms, its texture and examples.|Physical & chemical weathering::Breaking rock apart mechanically vs. changing it chemically (oxidation, hydrolysis).|Soil erosion::Wind and water carrying soil away; causes, effects and prevention."],
+["Meteorology, Astronomy & Climate","Layers of the atmosphere::Troposphere to exosphere: order, features and temperature trends.|Weather patterns::Air masses, fronts and winds that shape daily weather.|Atmospheric pressure::High vs. low pressure, barometers and their link to weather.|Habagat & Amihan::PH monsoons: southwest (rainy) and northeast (cool, dry) winds.|Tropical cyclones::Formation, stages, classification and PH typhoon signals.|Solar system::Sun, planets, dwarf planets, moons, asteroids and comets.|Planetary characteristics::Size, composition, atmosphere; terrestrial vs. gas giants.|Kepler’s Laws::Elliptical orbits, equal areas in equal times, period–distance relation.|Tides::Moon and Sun gravity; spring vs. neap tides.|Eclipses::Solar vs. lunar eclipses and the alignments behind them.|Lunar phases::The Moon’s 8 phases, waxing vs. waning, 29.5-day cycle."]],
+PH:[["Kinematics","Scalars & vectors::Magnitude only vs. magnitude and direction; vector addition.|Projectile motion::Independent horizontal and vertical motion; range, height, time of flight."],
+["Dynamics","Newton’s Laws of Motion::Inertia, F = ma, and action–reaction pairs.|Static & kinetic friction::Friction before and during sliding; f = μN.|Free-body diagrams::Draw every force on one object to find the net force."],
+["Work, Energy & Power","Work::W = F·d·cosθ, measured in joules.|Kinetic & potential energy::KE = ½mv², PE = mgh; conservation of energy.|Power::Rate of doing work, P = W/t, in watts."],
+["Electricity & Magnetism","Series & parallel circuits::Current, voltage and resistance rules; Ohm’s law.|Electrostatics::Charge, Coulomb’s law, electric fields, charging methods.|Magnetic fields::Field lines, poles, force on moving charges and currents.|Electromagnetism::Electromagnets, induction, motors and generators."],
+["Thermal Physics","Heat transfer::Conduction, convection and radiation."]],
+LS:[["Verbal Reasoning","Analogies::Find the relationship in one word pair and apply it to another.|Synonyms & antonyms::Words with similar or opposite meanings.|Word relationships::Part–whole, cause–effect, tool–use, degree.|Classification::Group words by category and spot the odd one.|Verbal logic::Reason from given facts to a valid conclusion.|Syllogisms::Two premises and a conclusion; does it have to follow?|Statement & conclusion::Decide which conclusions follow from a statement."],
+["Non-Verbal Reasoning","Number & figure sequences::Find the rule (add, multiply, alternate) to continue the series.|Pattern recognition::Spot repeating shapes, shading or rotation.|Odd one out::Find the figure that breaks the shared rule.|Missing figures::Complete a series or grid with the missing figure.|Figure classification::Sort figures into groups by shared features.|Matrix reasoning::Find the row and column rules in a 3×3 grid.|Figure analogy::A is to B as C is to ?, using shapes."],
+["Spatial Reasoning","Mental rotation::Imagine an object turned in space and match it.|2D & 3D visualization::Link flat nets and views to solid shapes.|Cube & dice problems::Opposite and adjacent faces, painted-side counts.|Paper folding & unfolding::Predict hole positions after folds and cuts.|Mirror images::Left–right flip across a vertical mirror.|Water images::Top–bottom flip, as reflected in water.|Embedded figures::Find a simple shape hidden in a complex one.|Spatial relationships::Position, direction and arrangement of objects."],
+["English & Syntax","Subject–verb agreement::The verb must match its subject in number.|Sentence correction::Fix grammar, punctuation and parallelism errors.|Parts of speech::Nouns, verbs, adjectives, adverbs, pronouns and more.|Sentence structure::Simple, compound, complex; clauses and phrases.|Vocabulary::Word meanings, roots, prefixes and suffixes.|Reading comprehension::Main idea, details, inference and tone.|Context clues::Use surrounding words to infer meaning.|Figures of speech::Simile, metaphor, personification, hyperbole, irony.|Logical sentence completion::Pick the word that fits the sentence’s logic."],
+["Mechanical & Technical Reasoning","Simple machines::Lever, pulley, wheel and axle, inclined plane, wedge, screw.|Levers & pulleys::Lever classes; fixed vs. movable pulleys.|Gears::Gear ratio and direction of rotation.|Wheels & axles::A bigger wheel radius gives more mechanical advantage.|Mechanical advantage::Output force ÷ input force.|Force & motion::How a push or pull changes motion.|Friction::Resists motion; effect of surface and weight.|Balance & equilibrium::Torque balance and center of gravity.|Pressure::Force per area, P = F/A; hydraulics.|Basic electricity::Circuits, conductors, insulators, switches.|Mechanical diagrams::Read linked parts and predict their movement.|Tools & basic mechanisms::Common tools, cams, ratchets and linkages."]],
+BI:[["Cellular & Molecular Biology","Photosynthesis — light-dependent reactions & Calvin cycle::Light to glucose: location, inputs, outputs, ATP and NADPH.|Cellular respiration — glycolysis, Krebs cycle, ETC & fermentation::Glucose to ATP: stages, locations, yields; anaerobic fermentation.|Cell membrane transport — passive, active & others::Diffusion, osmosis, facilitated transport, pumps, endo/exocytosis.|Cell cycle — mitosis, meiosis & chromosomes::Phases, mitosis vs. meiosis, chromosome numbers."],
+["Genetics & Molecular Genetics","DNA & RNA structure::Nucleotides, base pairing, double helix, types of RNA.|DNA replication, transcription & translation::Central dogma: copy DNA, make mRNA, build protein.|Mendelian genetics — crosses, Punnett squares & pedigree::Dominant/recessive, monohybrid and dihybrid crosses, pedigrees.|Non-Mendelian genetics::Incomplete dominance, codominance, sex-linked traits, multiple alleles.|Blood typing::ABO and Rh groups, genotypes and transfusion compatibility."],
+["Anatomy & Physiology","Plant tissues::Meristematic, dermal, ground and vascular tissue (xylem, phloem).|Animal tissues::Epithelial, connective, muscle and nervous tissue.|Human organ systems and their functions::Major body systems and what each one does."],
+["Ecology, Evolution & Taxonomy","Levels of biological organization::Cell, tissue, organ, system, organism, population, community, ecosystem, biosphere.|Trophic levels, food chains/webs & energy pyramids::Producers to decomposers; about 10% energy passes up each level.|Basic biogeochemical cycles::Water, carbon, nitrogen and phosphorus cycles.|Darwin’s theory of evolution::Variation, natural selection, adaptation, descent with modification.|Biological classification::Taxonomic ranks, binomial naming, domains and kingdoms."]],
+CH:[["Matter & Atomic Structure","Physical & chemical properties::How to tell physical changes from chemical ones.|Isotopes::Same protons, different neutrons; mass number notation.|Atomic mass & atomic number::Protons define the element; weighted average atomic mass.|Electron configuration::Aufbau, Pauli, Hund; fill orbitals in order.|Quantum numbers::n, l, ml, ms describe an electron’s state.|Valence electrons::Outer-shell electrons that drive bonding."],
+["Periodic Table & Chemical Bonding","Periodic trends — radius, ionization energy, electronegativity & electron affinity::How each property changes across periods and down groups.|Ionic, covalent & metallic bonding::Electron transfer, sharing or sea of electrons; properties.|Polar vs. nonpolar covalent bonds::Electronegativity difference and molecular polarity.|Intermolecular forces — H-bonding, dipole-dipole & London dispersion::Strength order and effect on boiling point."],
+["Stoichiometry & Chemical Reactions — VERY IMPORTANT","!Balancing chemical equations::Same atoms of each element on both sides.|!Types of chemical reactions::Synthesis, decomposition, single and double replacement, combustion.|!Mole concept & molar mass::Grams ↔ moles using molar mass.|!Avogadro’s number::6.022×10²³ particles per mole.|!Empirical & molecular formulas::Simplest ratio vs. actual formula from percent composition.|!Limiting reagents::The reactant that runs out first caps the product.|!Theoretical & percent yield::Percent yield = actual ÷ theoretical × 100."],
+["Solutions, Acids & Bases","Molarity, molality, mass percent & dilution::Concentration units and M₁V₁ = M₂V₂.|Factors affecting solubility::Temperature, pressure, and “like dissolves like”.|Henry’s Law::Gas solubility rises with its partial pressure.|Arrhenius, Brønsted-Lowry & Lewis acids/bases::Three acid-base definitions compared.|pH and pOH::pH = −log[H⁺]; pH + pOH = 14.|Strong vs. weak acids/bases::Full vs. partial ionization.|Neutralization reactions::Acid + base gives salt + water."],
+["Gas Laws, Thermochemistry & Thermodynamics","Boyle’s Law::Pressure and volume are inversely related (constant T).|Charles’s Law::Volume is proportional to temperature in kelvin (constant P).|Gay-Lussac’s Law::Pressure is proportional to temperature in kelvin (constant V).|Combined Gas Law::Combines Boyle, Charles and Gay-Lussac.|Ideal Gas Law::PV = nRT.|Endothermic vs. exothermic processes::Absorbing vs. releasing heat.|Enthalpy changes::ΔH of reactions and Hess’s law idea.|Specific heat capacity::q = mcΔT.|Basic laws of thermodynamics::Energy conservation and entropy increase."]]};
+const START=Date.UTC(2026,9,19),DAYS=30,L=864e5,T=[],M={};
+for(const s in D){const a=[];D[s].forEach(([h,l])=>l.split('|').forEach(x=>{const[n,i]=x.split('::'),m=n[0]=='!';a.push({s,h,n:m?'⭐ '+n.slice(1):n,i,xp:m?30:20})}));a.forEach((t,k)=>{t.id=s+k;t.p=(k+.5)/a.length;T.push(t)})}
+const nT=T.length;[...T].sort((a,b)=>a.p-b.p).forEach((t,k)=>t.d=Math.floor(k*27/nT));
+[['ES','Earth Science',27],['PH','Physics',27],['BI','Biology',28],['CH','Chemistry (stoichiometry!)',28],['LS','Logical Study',29]].forEach((r,i)=>T.push({id:'RV'+i,s:r[0],h:'Review & Boss',n:'🛡 Review: '+r[1],i:'Re-read notes, redo weak topics and quiz yourself.',xp:40,d:r[2]}));
+T.push({id:'BOSS',s:'LS',h:'Review & Boss',n:'👑 BOSS FIGHT: Full mock exam',i:'Timed mock exam covering all 5 subjects.',xp:100,d:29});
+T.forEach(t=>M[t.id]=t);
+let st={done:{},pl:{},pd:{},pn:0,q:3};
+try{const x=localStorage.getItem('hunterStudy2');if(x)Object.assign(st,JSON.parse(x))}catch(e){}
+const save=()=>{try{localStorage.setItem('hunterStudy2',JSON.stringify(st))}catch(e){}};
+const $=i=>document.getElementById(i),day=t=>st.pl[t.id]??t.d;
+const td=()=>{const n=new Date();return Math.round((Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())-START)/L)};
+const fmt=i=>i<0?'backlog':new Date(START+i*L).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});
+const xpOf=()=>Math.max(0,T.reduce((a,t)=>a+(st.done[t.id]?t.xp:0),0)-25*st.pn),lvl=x=>Math.floor(Math.sqrt(x/20))+1;
+const RK='EDCBAS',TT=['Newbie Hunter','Awakened','Elite Hunter','Commander','Knight Captain','Shadow Monarch'];
+let view='d',flt='',sel=Math.min(Math.max(td(),0),DAYS-1),prev=lvl(xpOf()),lastTd=td(),rc=0;
+const toast=m=>{const e=$('toast');e.innerHTML=m;e.className='s';setTimeout(()=>e.className='',2300)};
+const pend=()=>{const r=[];for(let d=0;d<Math.min(td(),DAYS);d++)if(!st.pd[d]&&T.some(t=>day(t)==d&&!st.done[t.id]))r.push(d);return r};
+const op=ph=>{let h='<option value="">'+ph+'</option>';for(const s in SUBJ){const a=T.filter(t=>t.s==s&&!st.done[t.id]&&day(t)!=sel);if(a.length)h+='<optgroup label="'+SUBJ[s][0]+'">'+a.map(t=>'<option value="'+t.id+'">'+t.n+' ('+fmt(day(t))+')</option>').join('')+'</optgroup>'}return h};
+const row=(t,w)=>'<div class="q'+(st.done[t.id]?' done':'')+'"><input type="checkbox" data-t="'+t.id+'"'+(st.done[t.id]?' checked':'')+'><span class="tag" style="background:'+SUBJ[t.s][1]+'">'+t.s+'</span><span class="n" data-i="'+t.id+'">'+t.n+'</span><span class="xp">+'+t.xp+'</span>'+(w?'<span class="sm">'+fmt(day(t))+'</span><button data-a="pin" data-v="'+t.id+'" title="Schedule on the selected day">📌</button>':(st.done[t.id]?'':'<select data-sw="'+t.id+'" title="Swap with another topic">'+op('⇄ swap')+'</select>')+'<button data-a="rm" data-v="'+t.id+'" title="Send back to World List backlog">✕</button>')+'</div>';
+const CH=['💪 50 push-ups (strict form, rest as needed)','🦵 100 squats','🧱 3 × 60-second plank','🔥 40 burpees','🪑 3 × 60-second wall sit','🧠 Write a 1-page explanation of your hardest skipped topic from memory','📝 Solve 20 practice problems from your weakest subject, no notes','🎤 Teach 3 skipped topics out loud for 10 minutes, no notes'];
+function render(){
+ const x=xpOf(),l=lvl(x),r=Math.min(5,Math.floor((l-1)/2)),lo=20*(l-1)**2,hi=20*l*l,ti=td();
+ $('rk').textContent=RK[r];$('lv').textContent='LV. '+l+' · '+TT[r];$('xb').style.width=((x-lo)/(hi-lo)*100)+'%';$('xt').textContent=x+' XP · '+(hi-x)+' XP to Level '+(l+1);
+ $('cd').textContent=Math.max(0,Math.round((Date.UTC(2026,10,17)-Date.UTC(2026,9,19))/L)-ti);
+ if(l>prev)toast('⚡ LEVEL UP!<br>LV. '+l+' · Rank '+RK[r]);prev=l;
+ $('bd').className=view=='d'?'on':'';$('bw').className=view=='w'?'on':'';$('vd').style.display=view=='d'?'':'none';$('vw').style.display=view=='w'?'':'none';
+ // lock
+ const pn=pend(),lk=$('lock');
+ if(pn.length){if(!lk.dataset.on){lk.dataset.on=1;lk.style.display='block';lk.innerHTML='<div class="b"><h1>⚠ SYSTEM LOCKED</h1><p>You failed to clear your quests on <b>'+pn.length+' day(s)</b>. The system took <b>−'+25*pn.length+' XP</b>. Choose ONE penalty quest and complete it for real to restore the system.</p>'+CH.map((c,i)=>'<label><input type="radio" name="pq" value="'+i+'"> '+c+'</label>').join('')+'<label><input type="checkbox" id="pk"> I completed it honestly.</label><button id="pb" disabled>RESTORE SYSTEM</button><p class="sm">Scale down if you are injured or unwell, and swap in the mental challenge instead.</p></div>'}}
+ else{lk.style.display='none';delete lk.dataset.on}
+ // calendar
+ let h='';
+ [[2026,9],[2026,10]].forEach(([y,m])=>{h+='<div class="o sm" style="margin:8px 0 4px">'+['October','November'][m-9]+' '+y+'</div><table class="cal"><tr>'+'SMTWTFS'.split('').map(d=>'<th>'+d+'</th>').join('')+'</tr><tr>';
+  const f=new Date(Date.UTC(y,m,1)).getUTCDay(),n=new Date(Date.UTC(y,m+1,0)).getUTCDate();for(let i=0;i<f;i++)h+='<td></td>';
+  for(let d=1;d<=n;d++){const i=(Date.UTC(y,m,d)-START)/L,inr=i>=0&&i<DAYS;if((f+d-1)%7==0&&d>1)h+='</tr><tr>';let c='',sb='';
+   if(inr){const ts=T.filter(t=>day(t)==i),dn=ts.filter(t=>st.done[t.id]).length;c='in'+(ts.length&&dn==ts.length?' full':'')+(i==sel?' sel':'')+(i==ti?' td':'');sb='<small>'+dn+'/'+ts.length+'</small>'}
+   h+='<td class="'+c+'"'+(inr?' data-a="day" data-v="'+i+'"':'')+'>'+d+sb+'</td>'}h+='</tr></table>'});
+ $('cal').innerHTML=h;
+ $('sb').innerHTML=Object.keys(SUBJ).map(k=>{const a=T.filter(t=>t.s==k),d=a.filter(t=>st.done[t.id]).length;return '<div class="sub"><b style="color:'+SUBJ[k][1]+'">'+SUBJ[k][0]+'</b><div class="bar"><i style="width:'+d/a.length*100+'%"></i></div><span class="sm">'+d+'/'+a.length+'</span></div>'}).join('');
+ // daily
+ const ts=T.filter(t=>day(t)==sel),dn=ts.filter(t=>st.done[t.id]).length,od=T.filter(t=>day(t)>=0&&day(t)<ti&&!st.done[t.id]);
+ $('dh').textContent='⚔ QUESTS · '+fmt(sel)+(sel==ti?' (TODAY)':'')+' · '+dn+'/'+ts.length;
+ $('od').innerHTML=od.length?'<div class="q" style="border-color:#ff7a7a"><span class="n" style="cursor:default">⚠ '+od.length+' unfinished quest(s) from past days</span><button data-a="bk">Send to backlog</button></div>':'';
+ $('dq').innerHTML=(ts.length?ts.map(t=>row(t)).join(''):'<div class="sm" style="margin-bottom:8px">No quests planned. Add some below or auto-fill.</div>')+'<div class="q" style="border-style:dashed"><select data-add="1" style="max-width:100%;flex:1">'+op('＋ Add a quest from the World List')+'</select></div><div class="q" style="border-style:dashed"><span class="sm">Quests per day:</span><select data-q="1">'+[1,2,3,4,5,6,7,8].map(n=>'<option'+(n==st.q?' selected':'')+'>'+n+'</option>').join('')+'</select><button data-a="auto">Auto-fill this day</button></div><div class="sm">Hover (or tap) a topic name to see what it covers. ⇄ swaps it with another topic; ✕ sends it back to the World List.</div>';
+ // world
+ const tot=T.filter(t=>st.done[t.id]).length;
+ let w='<h2>🌍 WORLD LIST · '+tot+'/'+T.length+' cleared</h2><div class="chips"><button data-a="flt" data-v="" class="'+(flt?'':'on')+'">All</button>'+Object.keys(SUBJ).map(k=>'<button data-a="flt" data-v="'+k+'" class="'+(flt==k?'on':'')+'">'+SUBJ[k][0]+'</button>').join('')+'</div><div class="sm">📌 schedules a topic on the selected day: <b>'+fmt(sel)+'</b>. Check or uncheck anything, any time.</div>';
+ for(const s in SUBJ){if(flt&&flt!=s)continue;const a=T.filter(t=>t.s==s);w+='<h2 style="margin-top:16px;color:'+SUBJ[s][1]+'">'+SUBJ[s][0].toUpperCase()+' · '+a.filter(t=>st.done[t.id]).length+'/'+a.length+'</h2>';
+  [...new Set(a.map(t=>t.h))].forEach(hd=>{const b=a.filter(t=>t.h==hd);w+='<div class="hh"><b>'+hd+'</b><span class="sm">'+b.filter(t=>st.done[t.id]).length+'/'+b.length+'</span><span style="flex:1"></span><button data-a="hd" data-v="'+s+'|'+hd+'|1">✓ all</button><button data-a="hd" data-v="'+s+'|'+hd+'|0">clear</button></div>'+b.map(t=>row(t,1)).join('')})}
+ $('vw').innerHTML=w;tick();
+}
+function tick(){const el=$('ck'),i=td();if(i<0||i>=DAYS){el.textContent='—';return}
+ const ts=T.filter(t=>day(t)==i);if(ts.length&&ts.every(t=>st.done[t.id])){el.textContent='✅ DAY CLEARED';el.style.color='var(--ok)'}
+ else{const n=new Date(),s=Math.floor((new Date(n.getFullYear(),n.getMonth(),n.getDate()+1)-n)/1e3),p=v=>String(v).padStart(2,'0');el.textContent=p(Math.floor(s/3600))+':'+p(Math.floor(s%3600/60))+':'+p(s%60);el.style.color=s<10800?'#ff5a5a':'var(--gold)'}
+ if(i!=lastTd){lastTd=i;render()}}
+setInterval(tick,1000);
+document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
+ if(d.t){t.checked?st.done[d.t]=1:delete st.done[d.t]}
+ else if(d.sw&&t.value){const a=M[d.sw],b=M[t.value],pb=day(b);st.pl[b.id]=sel;st.pl[a.id]=pb}
+ else if(d.add&&t.value)st.pl[t.value]=sel;
+ else if(d.q)st.q=+t.value;
+ else{const lk=$('lock');if(lk.contains(t))$('pb').disabled=!($('pk').checked&&lk.querySelector('input[name=pq]:checked'));return}
+ save();render()});
+document.addEventListener('click',e=>{
+ if(e.target.id=='pb'){const n=pend();st.pn+=n.length;n.forEach(d=>st.pd[d]=1);save();toast('System restored.<br>−'+25*n.length+' XP');render();return}
+ const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a,v=t.dataset.v;
+ if(a=='tab')view=v;else if(a=='flt')flt=v;else if(a=='day')sel=+v;
+ else if(a=='rm')st.pl[v]=-1;else if(a=='pin')st.pl[v]=sel;
+ else if(a=='bk')T.forEach(x=>{if(day(x)>=0&&day(x)<td()&&!st.done[x.id])st.pl[x.id]=-1});
+ else if(a=='hd'){const[s,h,o]=v.split('|');T.filter(x=>x.s==s&&x.h==h).forEach(x=>o=='1'?st.done[x.id]=1:delete st.done[x.id])}
+ else if(a=='auto'){const k=T.filter(x=>day(x)==sel).length,c=T.filter(x=>!st.done[x.id]&&day(x)!=sel).sort((p,q)=>{const f=z=>day(z)<0?999:day(z)<sel?-1:day(z);return f(p)-f(q)});c.slice(0,Math.max(0,st.q-k)).forEach(x=>st.pl[x.id]=sel)}
+ else if(a=='rs'){if(!rc){rc=1;t.textContent='Tap again to confirm';setTimeout(()=>{rc=0;t.textContent='Reset progress'},3000);return}st={done:{},pl:{},pd:{},pn:0,q:3};prev=1;rc=0;t.textContent='Reset progress'}
+ save();render()});
+const tip=$('tip');
+function hv(e){const t=e.target.closest&&e.target.closest('[data-i]');if(!t){tip.style.display='none';return}const k=M[t.dataset.i];
+ tip.innerHTML='<b style="color:'+SUBJ[k.s][1]+'">'+k.n+'</b><br>'+k.i+'<br><span style="color:#8b97c7;font-size:11px">'+SUBJ[k.s][0]+' · '+k.h+' · +'+k.xp+' XP</span>';tip.style.display='block';
+ tip.style.left=Math.max(6,Math.min(e.clientX+12,innerWidth-tip.offsetWidth-6))+'px';tip.style.top=Math.min(e.clientY+16,innerHeight-tip.offsetHeight-6)+'px'}
+document.addEventListener('mousemove',hv);document.addEventListener('click',hv);
+render();
+</script></body></html>
